@@ -1,5 +1,6 @@
 """Main Flask application for the Personal Task Manager API."""
 
+import os
 from flask import Flask, jsonify
 from routes.task_routes import task_bp
 
@@ -36,4 +37,6 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Only enable debug mode if explicitly set via environment variable
+    debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() in ('true', '1', 'yes')
+    app.run(debug=debug_mode, host='0.0.0.0', port=5000)
