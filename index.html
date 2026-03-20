@@ -1,0 +1,345 @@
+<!-- FRONT END  -->
+
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>CodePilot — AI Music &amp; Sound Therapy Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="bg-layer"></div>
+
+<!-- WELCOME MODAL -->
+<div class="modal-overlay show" id="welcomeModal">
+  <div class="modal-box">
+    <div class="modal-icon">🎵</div>
+    <div class="modal-title">Welcome to<br>CodePilot</div>
+    <div class="modal-sub">Enter your name to personalize your music and therapy experience!</div>
+    <input  class="modal-input" id="nameModalInput" placeholder="Your first name..." maxlength="30" autocomplete="off">
+    <button class="modal-btn" id="welcomeSubmitBtn">✦ Let's Make Music!</button>
+    <div class="modal-err" id="nameError">Please enter your name to continue 🙂</div>
+  </div>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-logo" onclick="showPage('home')">CodePilot</div>
+  <div class="nav-links">
+    <button class="nav-link active" id="nl-home"    onclick="showPage('home')">🎵 Studio</button>
+    <button class="nav-link"        id="nl-about"   onclick="showPage('about')">ℹ️ About</button>
+    <button class="nav-link"        id="nl-team"    onclick="showPage('team')">👥 Team</button>
+    <button class="nav-link"        id="nl-contact" onclick="showPage('contact')">✉️ Contact</button>
+  </div>
+  <div class="nav-right">
+    <div class="theme-switch">
+      <button class="tbtn on" id="tb-dark"    onclick="setTheme('dark',this)">🌙</button>
+      <button class="tbtn"    id="tb-light"   onclick="setTheme('light',this)">☀️</button>
+      <button class="tbtn"    id="tb-default" onclick="setTheme('default',this)">🔮</button>
+    </div>
+    <div class="user-badge" id="userBadge" onclick="showRenamePrompt()">
+      <div class="uavatar" id="userAvatar">?</div>
+      <span id="userNameDisplay">You</span>
+    </div>
+    <button class="hamburger" id="hamburger" onclick="toggleMobileNav()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav" id="mobileNav">
+  <button class="nav-link" onclick="showPage('home');closeMobileNav()">🎵 Studio</button>
+  <button class="nav-link" onclick="showPage('about');closeMobileNav()">ℹ️ About</button>
+  <button class="nav-link" onclick="showPage('team');closeMobileNav()">👥 Team</button>
+  <button class="nav-link" onclick="showPage('contact');closeMobileNav()">✉️ Contact</button>
+  <div class="mobile-theme">
+    <button class="tbtn on" onclick="setTheme('dark',this)">🌙 Dark</button>
+    <button class="tbtn" onclick="setTheme('light',this)">☀️ Light</button>
+    <button class="tbtn" onclick="setTheme('default',this)">🔮 Default</button>
+  </div>
+</div>
+
+<!-- ═══ HOME PAGE ═══ -->
+<div class="page active" id="page-home">
+<div class="page-inner">
+  <header class="hdr">
+    <div class="hackbadge"><span class="hbdot"></span>PS - 11 &nbsp;·&nbsp; HACKATHON 2026</div>
+    <div><span class="logo-ai">CodePilot</span><div class="logo-sub">AI Music &amp; Sound Therapy Studio</div></div>
+    <p class="tagline">Hum any tune → <b>AI turns it into real music instantly</b><br>+ Real Sound Therapy to relax your mind 🧘</p>
+  </header>
+
+  <div class="greeting-bar" id="greetingBar">
+    <span class="greeting-wave">👋</span><span id="greetingText">Welcome back!</span>
+  </div>
+
+  <div class="input-row">
+    <input type="text" id="nameInput" placeholder="✏️  Your name — personalizes your music experience" maxlength="30">
+    <button class="btn-pink" onclick="updateName()">Set Name</button>
+  </div>
+
+  <div class="steps">
+    <div class="step on" id="s1"><span class="snum">1</span>Record</div><span class="sarr">→</span>
+    <div class="step" id="s2"><span class="snum">2</span>Notes</div><span class="sarr">→</span>
+    <div class="step" id="s3"><span class="snum">3</span>Style</div><span class="sarr">→</span>
+    <div class="step" id="s4"><span class="snum">4</span>Mode</div><span class="sarr">→</span>
+    <div class="step" id="s5"><span class="snum">5</span>Generate</div><span class="sarr">→</span>
+    <div class="step" id="s6"><span class="snum">6</span>Play 🎵</div>
+  </div>
+
+  <div class="maingrid">
+    <div class="card">
+      <div class="clabel cl-p"><span class="cl-n">01</span>Record Your Voice</div>
+      <div class="mica">
+        <div class="mic-wrap">
+          <div class="mic-ring"></div><div class="mic-ring"></div><div class="mic-ring"></div>
+          <button id="micBtn" onclick="toggleMic()">🎙️</button>
+        </div>
+        <p class="mhint" id="mhint">Tap mic and hum your tune</p>
+        <div class="wavebox"><canvas id="wave"></canvas></div>
+        <div class="prow">
+          <span class="plbl">Pitch</span>
+          <div class="ptrack"><div class="pfill" id="pf"></div></div>
+          <span class="pnote" id="pn">—</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="clabel cl-pk"><span class="cl-n">02</span>Detected Notes</div>
+      <div class="nbox" id="nbox"><span class="nempty">Hum to see notes appear...</span></div>
+      <div class="slbl">Music Style</div>
+      <div class="sgrid">
+        <button class="sopt on" onclick="setStyle(this,'jingle')">🎵 Jingle</button>
+        <button class="sopt"    onclick="setStyle(this,'jazz')">🎷 Jazz</button>
+        <button class="sopt"    onclick="setStyle(this,'pop')">🎤 Pop</button>
+        <button class="sopt"    onclick="setStyle(this,'classical')">🎻 Classical</button>
+      </div>
+    </div>
+    <div class="card full">
+      <div class="clabel cl-c"><span class="cl-n">03</span>Interactive Piano — Click Keys to Play</div>
+      <div class="piano-shell">
+        <div style="position:relative" id="pianoWrap"><div class="pkeys" id="pianoKeys"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="speedo-wrap">
+    <div class="section-title">⚡ Playback Speed Control</div>
+    <div class="speedo-inner">
+      <div class="speedo-dial">
+        <canvas id="speedoDial" width="220" height="124"></canvas>
+        <div class="speedo-value" id="speedoVal">1.0×</div>
+      </div>
+      <div class="speedo-controls">
+        <div class="speed-header">
+          <span>Speed Multiplier</span>
+          <span id="speedLabel" style="color:var(--accent);font-weight:700;font-family:'JetBrains Mono',monospace">1.0×</span>
+        </div>
+        <input type="range" class="speed-slider" id="speedSlider" min="0.3" max="3.0" step="0.1" value="1.0" oninput="updateSpeed(this.value)">
+        <div class="speed-btns">
+          <button class="sp-btn" onclick="setSpeed(0.5)">0.5×</button>
+          <button class="sp-btn" onclick="setSpeed(0.75)">0.75×</button>
+          <button class="sp-btn" onclick="setSpeed(1.0)">1×</button>
+          <button class="sp-btn" onclick="setSpeed(1.5)">1.5×</button>
+          <button class="sp-btn" onclick="setSpeed(2.0)">2×</button>
+          <button class="sp-btn" onclick="setSpeed(3.0)">3×</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modes-wrap">
+    <div class="section-title">04 · Choose Playback Mode</div>
+    <div class="modes-grid">
+      <div class="mcard on" id="mc_piano"  onclick="pickMode('piano',this)"><div class="mc-badge mc-def">DEFAULT</div><span class="mc-ico">🎹</span><div class="mc-name">Grand Piano</div><div class="mc-desc">Rich warm overtones + reverb</div></div>
+      <div class="mcard"   id="mc_hum"    onclick="pickMode('hum',this)"><div class="mc-badge mc-hum">YOUR HUM</div><span class="mc-ico">🎤</span><div class="mc-name">My Hum</div><div class="mc-desc">Your exact voice replayed</div></div>
+      <div class="mcard"   id="mc_bell"   onclick="pickMode('bell',this)"><div class="mc-badge mc-zen">ZEN</div><span class="mc-ico">🔔</span><div class="mc-name">Crystal Bell</div><div class="mc-desc">Pure ethereal FM shimmer</div></div>
+      <div class="mcard"   id="mc_guitar" onclick="pickMode('guitar',this)"><div class="mc-badge mc-relax">CHILL</div><span class="mc-ico">🎸</span><div class="mc-name">Acoustic Guitar</div><div class="mc-desc">Plucked warm string body</div></div>
+      <div class="mcard"   id="mc_flute"  onclick="pickMode('flute',this)"><div class="mc-badge mc-heal">RELAX</div><span class="mc-ico">🪈</span><div class="mc-name">Flute</div><div class="mc-desc">Breathy airy woodwind</div></div>
+    </div>
+    <div class="therapy-divider">🧘 Sound Therapy Modes</div>
+    <div class="therapy-modes-grid">
+      <div class="mcard therapy-mode" id="mc_tibetan"  onclick="pickTherapy('tibetan',this)"><div class="mc-badge mc-relax">THERAPY</div><span class="mc-ico">🪘</span><div class="mc-name">Tibetan Bowl</div><div class="mc-desc">Ancient healing resonance</div></div>
+      <div class="mcard therapy-mode" id="mc_binaural" onclick="pickTherapy('binaural',this)"><div class="mc-badge mc-zen">THETA</div><span class="mc-ico">🧠</span><div class="mc-name">Binaural Beats</div><div class="mc-desc">Brain-sync theta waves</div></div>
+      <div class="mcard therapy-mode" id="mc_soundbath" onclick="pickTherapy('soundbath',this)"><div class="mc-badge mc-heal">HEAL</div><span class="mc-ico">🌊</span><div class="mc-name">Sound Bath</div><div class="mc-desc">Full immersive meditation</div></div>
+    </div>
+  </div>
+
+  <div class="therapy-player card" id="therapyPlayer">
+    <div class="tp-header">
+      <div class="tp-icon" id="tpIcon">🪘</div>
+      <div class="tp-info">
+        <h3 id="tpTitle">Tibetan Singing Bowl Therapy</h3>
+        <p id="tpDesc">Ancient resonance therapy. Close your eyes and breathe deeply.</p>
+      </div>
+    </div>
+    <div class="tp-controls">
+      <button class="tp-btn" id="tpPlayBtn" onclick="therapyPlay()">▶ Start Therapy</button>
+      <button class="tp-btn stop-tp" onclick="therapyStop()">■ Stop</button>
+      <div class="tp-volume">
+        <label>Volume</label>
+        <input type="range" class="tp-vol-slider" id="tpVolume" min="0" max="1" step="0.05" value="0.7" oninput="setTherapyVolume(this.value)">
+      </div>
+    </div>
+    <div class="tp-wave"><div class="tp-wave-fill"></div><div class="tp-wave-bars" id="tpBars"></div></div>
+  </div>
+
+  <div class="gen-wrap">
+    <button id="genBtn" onclick="generate()"><span class="gbspan">✦ &nbsp;Generate AI Melody from My Voice</span></button>
+  </div>
+
+  <div class="card">
+    <div class="clabel cl-a"><span class="cl-n">06</span>Your AI Melody</div>
+    <div class="melody-owner" id="melodyOwner"><span>🎵</span><span id="melodyOwnerText">Melody by You</span></div>
+    <div class="thinkbox" id="tbox"><div class="tdots"><span></span><span></span><span></span></div><span class="ttxt">CodePilot AI is composing your personal melody...</span></div>
+    <div class="modeline" id="modeline"><span class="mldot"></span><span id="mlineText">Playing in Grand Piano mode</span></div>
+    <div class="mvis" id="mvis"><span class="vempty">Hit generate to create your melody →</span></div>
+    <div class="convert-bar" id="convertBar"><div class="convert-label">⏳ Converting...</div><div class="convert-bar-inner"><div class="convert-fill" id="convertFill"></div></div></div>
+    <div class="ctrls">
+      <button class="cbtn c-play"     id="playBtn"  onclick="doPlay()"        disabled>▶ Play</button>
+      <button class="cbtn c-stop"     onclick="doStop()">■ Stop</button>
+      <button class="cbtn c-again"    id="againBtn" onclick="doPlay()"        disabled>↺ Replay</button>
+      <button class="cbtn c-clear"    onclick="doClear()">✕ Clear</button>
+      <button class="cbtn c-download" id="dlBtn"    onclick="downloadAudio()" disabled>⬇ Download</button>
+      <button class="cbtn c-convert"  id="convBtn"  onclick="convertToMP3()"  disabled>🎵 MP3</button>
+      <span class="bpmpill" id="bpmpill">BPM: —</span>
+    </div>
+    <div class="descbox" id="dbox"></div>
+  </div>
+
+  <div class="library-wrap">
+    <div class="lib-header">
+      <div class="lib-title">🎵 My Melody Library</div>
+      <button class="lib-clear-btn" onclick="clearLibrary()">Clear All</button>
+    </div>
+    <div class="library-list" id="libraryList"><div class="lib-empty">No recordings yet. Generate a melody!</div></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><span class="sico">🎵</span><div class="slbl2">Notes</div><div class="sval" id="stn">0</div></div>
+    <div class="stat"><span class="sico">🤖</span><div class="slbl2">Melodies</div><div class="sval" id="stm">0</div></div>
+    <div class="stat"><span class="sico">⏱️</span><div class="slbl2">Rec Time</div><div class="sval" id="stt">0s</div></div>
+    <div class="stat"><span class="sico">🎹</span><div class="slbl2">Keys Hit</div><div class="sval" id="stk">0</div></div>
+  </div>
+</div></div>
+
+<!-- ═══ ABOUT PAGE ═══ -->
+<div class="page" id="page-about"><div class="page-inner">
+  <div class="page-hero"><h1>About CodePilot</h1><p>A next-generation AI-powered music and sound therapy platform built to make music creation and mental wellness accessible for everyone.</p></div>
+  <div class="mission-box"><h2>🎯 Our Mission</h2><p>CodePilot was born from a simple idea: everyone has music inside them. We built an AI studio that listens to your hum and transforms it into a full melody — combined with sound therapy so you can create music and relieve stress in the same place. No musical training needed. Just your voice.</p></div>
+  <div class="two-col">
+    <div class="info-card"><h3>🎵 What is CodePilot?</h3><p>An AI-powered music generation studio that detects the notes you hum, uses Claude AI to compose a personalized melody, and plays it back through 5 instrument modes plus 3 real sound therapy modes — all synthesized in real-time in your browser with no downloads needed.</p></div>
+    <div class="info-card"><h3>🧠 The Technology</h3><p>Built with Web Audio API for real-time pitch detection using autocorrelation algorithms, Tone.js for professional-grade synthesis with reverb, chorus and EQ effects, and the Claude AI API (via a secure backend proxy) for intelligent melody generation that mirrors your unique vocal pattern.</p></div>
+  </div>
+  <div style="text-align:center;margin-bottom:28px"><div class="section-title" style="justify-content:center;max-width:400px;margin:0 auto 16px;">✦ Built With</div><div><span class="tech-badge tb-p">Claude AI</span><span class="tech-badge tb-g">Tone.js</span><span class="tech-badge tb-b">Web Audio API</span><span class="tech-badge tb-a">Vanilla JS</span><span class="tech-badge tb-p">HTML5 Canvas</span><span class="tech-badge tb-g">Vercel Serverless</span><span class="tech-badge tb-b">Cookies + LocalStorage</span></div></div>
+  <div class="section-title">🌟 Key Features</div>
+  <div class="features-grid" style="margin-top:12px">
+    <div class="feat-card"><span class="feat-ico">🎙️</span><h4>Voice-to-Melody</h4><p>Hum any tune and AI detects your notes in real time and composes a full melody that mirrors your musical intent.</p></div>
+    <div class="feat-card"><span class="feat-ico">🧘</span><h4>Sound Therapy</h4><p>Three clinically-inspired modes — Tibetan Bowls, Binaural Beats, and Sound Bath — for genuine relaxation.</p></div>
+    <div class="feat-card"><span class="feat-ico">🎹</span><h4>Interactive Piano</h4><p>Fully interactive 3-octave piano keyboard with professional synthesis and touch support.</p></div>
+    <div class="feat-card"><span class="feat-ico">📚</span><h4>Melody Library</h4><p>Every melody you generate is automatically saved. Play, re-download, or delete anytime.</p></div>
+    <div class="feat-card"><span class="feat-ico">⬇️</span><h4>Export Audio</h4><p>Download your melodies as WAV or MP3 audio files, rendered with full reverb and mastering effects.</p></div>
+    <div class="feat-card"><span class="feat-ico">🍪</span><h4>Remembers You</h4><p>Your name, theme, and speed preferences are saved in cookies — everything ready when you return.</p></div>
+  </div>
+</div></div>
+
+<!-- ═══ TEAM PAGE ═══ -->
+<div class="page" id="page-team"><div class="page-inner">
+  <div class="page-hero"><h1>Meet The Team</h1><p>BCA 4th Semester students building the future of AI-powered music experiences.</p></div>
+  <div class="hk-banner">
+    <div class="hk-badge"><span class="hbdot"></span>PS - 11 &nbsp;·&nbsp; HACKATHON 2026</div>
+    <h2>Hackathon 2.0 — CodePilot</h2>
+    <p>Built during the PS-11 Hackathon 2026 as a team project by four passionate BCA 4th Semester students. Our goal was to merge AI music generation with real sound therapy into one seamless, beautiful, and accessible experience for everyone.</p>
+  </div>
+  <div class="section-title" style="margin-bottom:16px">👨‍💻 Our Team</div>
+  <div class="team-grid">
+    <div class="team-card lead" style="grid-column:1/-1">
+      <div class="lead-tag">⭐ Team Lead</div>
+      <div class="team-avatar">AK</div>
+      <div class="team-name">Ajay Kushwaha</div>
+      <div class="team-role">Project Lead &amp; Full-Stack Developer</div>
+      <div class="team-bio">Visionary behind CodePilot. Ajay architected the entire platform — from the AI melody engine and sound therapy synthesizer to the secure backend proxy and multi-page layout. His passion for merging music and technology made this project possible.</div>
+      <a class="team-email" href="mailto:ajaykushwaha9016@gmail.com">📧 ajaykushwaha9016@gmail.com</a>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">FU</div>
+      <div class="team-name">Foram Upadhyay</div>
+      <div class="team-role">UI/UX &amp; Frontend Developer</div>
+      <div class="team-bio">Foram brought the visual magic to CodePilot. She crafted the responsive layouts, theme system, and the immersive visual feedback that makes every interaction feel polished and delightful across all devices.</div>
+      <a class="team-email" href="mailto:foramupadhyay053@gmail.com">📧 foramupadhyay053@gmail.com</a>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">KZ</div>
+      <div class="team-name">Kaushal Zala</div>
+      <div class="team-role">UI Designer &amp; Visual Creative</div>
+      <div class="team-bio">Kaushal led the visual and UI design of CodePilot. He crafted the color system, component layouts, iconography, and the overall aesthetic that makes CodePilot feel premium, modern, and user-friendly across all screen sizes.</div>
+      <span class="team-email">🎵 BCA 4th Semester</span>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">RS</div>
+      <div class="team-name">Riya Sakariya</div>
+      <div class="team-role">AI Integration &amp; Research</div>
+      <div class="team-bio">Riya handled Claude AI integration, prompt engineering, and melody generation logic. She also researched the scientific principles behind sound therapy to ensure our Binaural Beats and Tibetan Bowl modes are grounded in real therapeutic practice.</div>
+      <span class="team-email">🎵 BCA 4th Semester</span>
+    </div>
+  </div>
+</div></div>
+
+<!-- ═══ CONTACT PAGE ═══ -->
+<div class="page" id="page-contact"><div class="page-inner">
+  <div class="page-hero"><h1>Contact Us</h1><p>Have a question, suggestion, or want to collaborate? We'd love to hear from you!</p></div>
+  <div class="contact-grid">
+    <div class="contact-card">
+      <h3>📬 Get In Touch</h3>
+      <div class="ci"><div class="ci-ico">👨‍💻</div><div><div class="ci-lbl">Team Lead</div><div class="ci-val">Ajay Kushwaha</div></div></div>
+      <div class="ci"><div class="ci-ico">📧</div><div><div class="ci-lbl">Primary Email</div><div class="ci-val"><a href="mailto:ajaykushwaha9016@gmail.com">ajaykushwaha9016@gmail.com</a></div></div></div>
+      <div class="ci"><div class="ci-ico">📧</div><div><div class="ci-lbl">Co-Developer Email</div><div class="ci-val"><a href="mailto:foramupadhyay053@gmail.com">foramupadhyay053@gmail.com</a></div></div></div>
+      <div class="ci"><div class="ci-ico">🏫</div><div><div class="ci-lbl">Programme</div><div class="ci-val">BCA — 4th Semester</div></div></div>
+      <div class="ci"><div class="ci-ico">🏆</div><div><div class="ci-lbl">Event</div><div class="ci-val">PS-11 Hackathon 2026</div></div></div>
+      <div class="ci"><div class="ci-ico">👥</div><div><div class="ci-lbl">Team Members</div><div class="ci-val">Ajay Kushwaha · Foram Upadhyay<br>Kaushal Zala · Riya Sakariya</div></div></div>
+    </div>
+    <div class="contact-card">
+    <form class="contact-form">
+      <h3>💬 Send a Message</h3>
+      <div class="contact-container">
+        <div class="fg"><label>Your Name</label><input type="text" id="cf-name" placeholder="Enter your name" name="yname"></div>
+        <div class="fg"><label>Email</label><input type="email" id="cf-email" placeholder="your@email.com" name="email"></div>
+        <div class="fg"><label>Subject</label><select id="cf-subject" name="subject">
+          <option value="">Select a topic...</option>
+          <option>General Feedback</option>
+          <option>Bug Report</option>
+          <option>Feature Request</option>
+          <option>Collaboration</option> 
+          <option>Sound Therapy Questions</option>
+          <option>Other</option>
+   </select>
+      </div>
+        <div class="fg"><label>Message</label><textarea id="cf-msg" rows="4" placeholder="Write your message here..." name="message"></textarea></div>
+        <button type="button" class="form-submit" onclick="submitContactForm()">✦ Send Message</button>
+        <div class="form-ok" id="formOk">🎉 Thank you! We'll get back to you soon.</div>
+      </div>
+  </form>
+    </div>
+  </div>
+</div></div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand"><div class="logo-sm">CodePilot</div><p>AI Music &amp; Sound Therapy Studio. Hum your tune and let AI compose your perfect melody.</p></div>
+      <div class="footer-col"><h4>Navigate</h4><ul><li><button onclick="showPage('home')">🎵 Studio</button></li><li><button onclick="showPage('about')">ℹ️ About</button></li><li><button onclick="showPage('team')">👥 Team</button></li><li><button onclick="showPage('contact')">✉️ Contact</button></li></ul></div>
+      <div class="footer-col"><h4>Contact</h4><ul><li><a href="mailto:ajaykushwaha9016@gmail.com">Ajay Kushwaha</a></li><li><a href="mailto:foramupadhyay053@gmail.com">Foram Upadhyay</a></li><li><a href="#">PS-11 Hackathon 2026</a></li><li><a href="#">BCA 4th Semester</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><p>© 2026 <span>CodePilot</span> — Built with ❤️ by Ajay · Foram · Kaushal · Riya</p><p>PS-11 Hackathon 2026 · BCA 4th Semester</p></div>
+  </div>
+</footer>
+
+<div id="toasts"></div>
+<script src="script.js"></script>
+</body>
+</html>
